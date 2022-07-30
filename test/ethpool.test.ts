@@ -123,11 +123,11 @@ describe('EthPool', () => {
   // 9
   describe('user 1 stakes 100 tokens and user 2 stakes 100 tokens', async () => {
     const depositAmt = 100;
-  
+
     beforeEach(async () => {
       const signer2Addr = signers[2].address
       const ethPoolAsSigner2 = ethPool.connect(signers[2])
-      
+
       // send some token to signer1
       rewardToken.transfer(signer1Addr, depositAmt)
       const signer1TokenBal = await rewardToken.balanceOf(signer1Addr)
@@ -158,7 +158,7 @@ describe('EthPool', () => {
 
     it('add rewards should distribute rewards equally', async () => {
       const signer2Addr = signers[2].address
-      
+
       await rewardToken.approve(ethPool.address, depositAmt)
       await ethPool.addReward(depositAmt)
 
@@ -170,13 +170,25 @@ describe('EthPool', () => {
     })
 
     it('user should be able to withdraw rewards', async () => {
-      
+      await ethPoolAsSigner1.unstake(50)
+
+      const stakeInfoSigner1 = await ethPoolAsSigner1.stakes(signer1Addr)
+      expect(stakeInfoSigner1.stakedAmount.toString()).to.eq("50")
+
+      const signer1Bal = await rewardToken.balanceOf(signer1Addr)
+      expect(signer1Bal.toString()).to.eq("50")
     })
+
+    it('user should not be able to withdraw more rewards than they have', async () => {
+      // @ts-ignore
+      await expect(ethPoolAsSigner1.unstake(150)).to.be.reverted;
+    })
+
 
     it('user who deposits after addReward should not get old rewards', async () => {
 
     })
 
-    it('user who deposits after, and new rewards added should get correct amount of rewards', async () => {})
+    it('user who deposits after, and new rewards added should get correct amount of rewards', async () => { })
   })
 })

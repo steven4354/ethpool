@@ -82,4 +82,18 @@ contract EthPool is Ownable {
 
         rewardToken.transferFrom(msg.sender, address(this), _amount);
     }
+
+    /*
+    User withdraw
+    */
+    function unstake(uint256 _amount) public {
+        Stake storage stake = stakes[msg.sender];
+
+        // Update state
+        stake.stakedAmount = stake.stakedAmount.sub(_amount);
+        require(stake.stakedAmount >= 0, "withdrawal amount too high");
+
+        rewardToken.approve(address(this), _amount);
+        rewardToken.transfer(msg.sender, _amount);
+    }
 }
