@@ -19,7 +19,7 @@ contract EthPool is Ownable {
         uint256 stakedAmount;
     }
 
-    uint256 totalStaked;
+    uint256 public totalStaked;
     address[] public addressArray;
     mapping(address => Stake) public stakes;
 
@@ -34,7 +34,6 @@ contract EthPool is Ownable {
     /*
     Set Reward Token Contract
     */
-    // TODO: ask if the reward is an erc20
     function setRewardToken(address _reward) public onlyOwner {
         rewardAddress = _reward;
         rewardToken = IERC20(rewardAddress);
@@ -43,8 +42,23 @@ contract EthPool is Ownable {
     /*
     Add Reward
     */
-    // TODO: ask if should add a remove reward
     function addReward(uint256 _rewardAmount) public onlyOwner {
+        require(totalStaked > 0, "no stakers yet, come back to add/distribute rewards when users have staked");
+
+        for (uint256 i = 0; i < addressArray.length; i++) {
+            address stakerAddr = addressArray[i];
+            Stake storage stake = stakes[stakerAddr];
+
+            // TODO: amounts smaller than supported precision will result to 0 rewards
+            // check if results in any dust settling in the smart contract. perhaps onlyOwner withdraw func to retrieve
+            uint256 numerator = stake.stakedAmount.mul(_rewardAmount);
+            uint256 rewardAmtToDistr = numerator.div(totalStaked);
+            stake.stakedAmount = stake.stakedAmount.add(rewardAmtToDistr);
+        }
+
+        // update total staked
+        totalStaked = totalStaked.add(_rewardAmount);
+
         rewardToken.transferFrom(msg.sender, address(this), _rewardAmount);
     }
 
@@ -62,6 +76,9 @@ contract EthPool is Ownable {
 
         // update the amount
         stake.stakedAmount = stake.stakedAmount.add(_amount);
+
+        // update total staked
+        totalStaked = totalStaked.add(_amount);
 
         rewardToken.transferFrom(msg.sender, address(this), _amount);
     }
