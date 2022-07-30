@@ -73,4 +73,32 @@ describe('EthPool', () => {
     })
   })
 
+  // 8
+  describe('user stake', async () => {
+    it('should suceed', async () => {
+      const depositAmt = 100;
+      const signers = await getSigners()
+      const signer1 = signers[1]
+      const signer1Addr = signers[1].address
+
+      // send some token to signer1
+      rewardToken.transfer(signer1Addr, depositAmt)
+      const signer1TokenBal = await rewardToken.balanceOf(signer1Addr)
+      expect(signer1TokenBal, depositAmt.toString())
+
+      const ethPoolAsSigner1 = await ethPool.connect(signer1)
+      const rewardTokenAsSigner1 = await rewardToken.connect(signer1)
+      await rewardTokenAsSigner1.approve(ethPoolAsSigner1.address, 100)
+
+      await ethPoolAsSigner1.performStake(depositAmt)
+
+      const addressArr = await ethPoolAsSigner1.getAddressArray()
+      const stakeInfo = await ethPoolAsSigner1.stakes(signer1Addr)
+
+      // shows up in address array & info stored correctly
+      expect(addressArr.length).to.eq(1)
+      expect(addressArr[0]).to.eq(signer1Addr)
+      expect(stakeInfo.stakedAmount.toString()).to.eq(depositAmt.toString())
+    })
+  })
 })
