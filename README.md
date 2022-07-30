@@ -1,57 +1,17 @@
-# Ethereum Solidity Starter
+# EthPool
 
-This is a skeleton repository to work as a foundation for a smart contracts project using Solidity.
+## Summary
+ETHPool provides a service where people can deposit ETH and they will receive rewards proportional to their deposits in the pool. Users must be able to take out their deposits along with their portion of rewards at any time. New rewards are deposited manually into the pool by the ETHPool team using a contract function.
 
-## Quickstart
+## Requirements
+Only the team can deposit rewards.
+The team can deposit rewards at any time.
+Deposited rewards go to the pool of users, not to individual users.
+Users should be able to withdraw their deposits along with their share of rewards considering the time when they deposited. They should not get rewards for the ones distributed before their deposits.
 
-1. Clone the repo
-2. Run `yarn install`
+## Getting started
 
-## What’s Included?
-
-- **[Hardhat](https://hardhat.org/)**: Ethereum development environment for professionals.
-- **[Waffle](https://getwaffle.io/)**: The most advanced framework for testing smart contracts
-- **[Typechain](https://github.com/ethereum-ts/TypeChain)**: TypeScript bindings for Ethereum smart contracts
-- **[Tenderly](https://tenderly.co/)**: Real-time monitoring, alerting, and troubleshooting for Smart Contracts.
-- **[Ethers]()**: A complete Ethereum wallet implementation and utilities in JavaScript (and TypeScript).
-- **[Etherscan](https://etherscan.io)**: Verify contracts in The Ethereum Blockchain Explorer
-
-#### Hardhat Plugins
-- ABI Exporter
-- Gas Reporter
-- Contract Sizer
-- OpenZeppelin Upgrades
-## Usage
-
-Look at the `package.json` inside scripts section to see available commands. A number of helper build scripts are located in `/scripts`.
-### Build contracts
-
-Compiles contracts and creates Typechain bindings.
-
-`yarn build`
-
-### Run tests
-
-Runs all tests in the `/test` folder.
-
-`yarn test`
-
-### Run tests with gas report
-
-Run all tests calculating gas estimations.
-
-`yarn test:gas`
-
-The gas report will be saved on the `/reports` folder.
-
-### Deploy to Ethereum
-
-Create/modify network config in hardhat.config.ts and add API key and private key, then run:
-
-`npx hardhat run --network rinkeby scripts/deploy.ts`
-
-### Verify on Etherscan
-
-Using the hardhat-etherscan plugin, add Etherscan API key to hardhat.config.ts, then run:
-
-`npx hardhat verify --network rinkeby <DEPLOYED ADDRESS>`
+```bash
+yarn
+yarn test
+```
