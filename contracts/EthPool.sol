@@ -93,7 +93,6 @@ contract EthPool is Ownable {
         stake.stakedAmount = stake.stakedAmount.sub(_amount);
         require(stake.stakedAmount >= 0, "withdrawal amount too high");
 
-        rewardToken.approve(address(this), _amount);
         rewardToken.transfer(msg.sender, _amount);
     }
 }
