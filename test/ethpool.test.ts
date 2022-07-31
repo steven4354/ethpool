@@ -183,8 +183,16 @@ describe('EthPool', () => {
     })
 
     it('user should not be able to withdraw more rewards than they have', async () => {
+      let stakeInfoSigner1 = await ethPoolAsSigner1.stakes(signer1Addr)
+      expect(stakeInfoSigner1.stakedAmount.toString()).to.eq("100")
+
       // @ts-ignore
       await expect(ethPoolAsSigner1.unstake(150)).to.be.reverted;
+
+      // amount staked should be unchanged after revert
+      stakeInfoSigner1 = await ethPoolAsSigner1.stakes(signer1Addr)
+      expect(stakeInfoSigner1.stakedAmount.toString()).to.eq("100")
+
     })
 
     it('user who deposits after, and new rewards added should get correct amount of rewards', async () => { 
