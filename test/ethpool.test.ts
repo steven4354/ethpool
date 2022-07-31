@@ -128,15 +128,18 @@ describe('EthPool', () => {
       const signer2Addr = signers[2].address
       const ethPoolAsSigner2 = ethPool.connect(signers[2])
 
-      // send some token to signer1
+      // send some token to signer1, 2, 3
       rewardToken.transfer(signer1Addr, depositAmt)
       const signer1TokenBal = await rewardToken.balanceOf(signer1Addr)
       expect(signer1TokenBal, depositAmt.toString())
 
-      // send some token to signer2
       rewardToken.transfer(signer2Addr, depositAmt)
       const signer2TokenBal = await rewardToken.balanceOf(signer2Addr)
       expect(signer2TokenBal, depositAmt.toString())
+
+      rewardToken.transfer(signers[3].address, depositAmt)
+      const signer3TokenBal = await rewardToken.balanceOf(signers[3].address)
+      expect(signer3TokenBal, depositAmt.toString())
 
       // perform stake
       const rewardTokenAsSigner1 = await rewardToken.connect(signer1)
@@ -184,11 +187,39 @@ describe('EthPool', () => {
       await expect(ethPoolAsSigner1.unstake(150)).to.be.reverted;
     })
 
+    it('user who deposits after, and new rewards added should get correct amount of rewards', async () => { 
+      // first reward distribution
+      const signer2Addr = signers[2].address
 
-    it('user who deposits after addReward should not get old rewards', async () => {
+      await rewardToken.approve(ethPool.address, depositAmt)
+      await ethPool.addReward(depositAmt)
+
+      let stakeInfoSigner1 = await ethPoolAsSigner1.stakes(signer1Addr)
+      let stakeInfoSigner2 = await ethPoolAsSigner1.stakes(signer2Addr)
+      let stakeInfoSigner3 = await ethPoolAsSigner1.stakes(signers[3].address)
+
+      expect(stakeInfoSigner1.stakedAmount.toString()).to.eq("150")
+      expect(stakeInfoSigner2.stakedAmount.toString()).to.eq("150")
+
+      // signer 3 deposits
+      const rewardTokenAsSigner3 = await rewardToken.connect(signers[3])
+      const ethPoolAsSigner3 = await ethPool.connect(signers[3])
+      await rewardTokenAsSigner3.approve(ethPoolAsSigner1.address, 100)
+      await ethPoolAsSigner3.performStake(depositAmt)
+
+      // add rewards
+      await rewardToken.approve(ethPool.address, depositAmt)
+      await ethPool.addReward(depositAmt)
+
+      // check new balance
+      stakeInfoSigner1 = await ethPoolAsSigner1.stakes(signer1Addr)
+      stakeInfoSigner2 = await ethPoolAsSigner1.stakes(signer2Addr)
+      stakeInfoSigner3 = await ethPoolAsSigner1.stakes(signers[3].address)
+
+      expect(stakeInfoSigner3.stakedAmount.toString()).to.eq("125")
+      expect(stakeInfoSigner2.stakedAmount.toString()).to.eq("187")
+      expect(stakeInfoSigner1.stakedAmount.toString()).to.eq("187")
 
     })
-
-    it('user who deposits after, and new rewards added should get correct amount of rewards', async () => { })
   })
 })
