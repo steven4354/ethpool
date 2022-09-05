@@ -15,3 +15,10 @@ Users should be able to withdraw their deposits along with their share of reward
 yarn
 yarn test
 ```
+
+## Improvements
+
+Use MasterChef's method of calculating user's share of rewards:
+https://dev.to/heymarkkop/understanding-sushiswaps-masterchef-staking-rewards-1m6f
+
+https://www.figma.com/file/e0XAd2nMdN80mBQ3Pq1xNF/Untitled?node-id=1%3A113
